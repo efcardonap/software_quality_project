@@ -1,0 +1,115 @@
+// ============================================================
+//  Jenkinsfile — Software Quality Project
+//  RETO: El equipo debe completar las secciones marcadas con TODO
+//  Calidad del Software · VII Semestre
+// ============================================================
+
+pipeline {
+
+    agent any
+
+    environment {
+        // TODO 1: Define las siguientes variables de entorno
+        // SONAR_PROJECT_KEY  = "???"         // clave del proyecto en SonarQube
+        // SONAR_PROJECT_NAME = "???"         // nombre visible en SonarQube
+        // SONAR_HOST_URL     = "???"         // URL del contenedor SonarQube
+        // COVERAGE_THRESHOLD = "???"         // umbral mínimo de cobertura (sugerido: 60)
+        // REPORTS_DIR        = "???"         // carpeta de reportes
+
+        APP_NAME = "software-quality-project"
+    }
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: "5"))
+        timeout(time: 15, unit: "MINUTES")
+        timestamps()
+        disableConcurrentBuilds()
+    }
+
+    stages {
+
+        stage("1 · Checkout") {
+            steps {
+                echo "Descargando código desde el fork del equipo..."
+                checkout scm
+                sh "ls -la"
+            }
+        }
+
+        stage("2 · Preparar entorno") {
+            steps {
+                // TODO 2: Instala las dependencias de Python
+                // Pista: usa pip3 con --no-cache-dir y el archivo requirements.txt
+                // Crea también el directorio de reportes con mkdir -p
+                sh """
+                    echo "TODO: instalar dependencias"
+                """
+            }
+        }
+
+        stage("3 · Pruebas unitarias") {
+            steps {
+                // TODO 3: Ejecuta pytest con:
+                //   --cov=src
+                //   --cov-report=xml (para SonarQube)
+                //   --cov-report=html (para el dashboard)
+                //   --cov-fail-under=${COVERAGE_THRESHOLD}
+                //   --junitxml (para publicar resultados en Jenkins)
+                sh """
+                    echo "TODO: ejecutar pytest"
+                """
+            }
+            post {
+                always {
+                    // TODO 4: Publica los resultados de JUnit en Jenkins
+                    // Pista: usa la instrucción junit con la ruta al XML
+                    echo "TODO: publicar resultados"
+                }
+            }
+        }
+
+        stage("4 · Análisis SonarQube") {
+            steps {
+                // TODO 5: Ejecuta sonar-scanner con los parámetros correctos:
+                //   -Dsonar.projectKey
+                //   -Dsonar.sources=src
+                //   -Dsonar.tests=tests
+                //   -Dsonar.python.coverage.reportPaths
+                //   -Dsonar.python.version=3
+                withSonarQubeEnv("SonarQube") {
+                    sh """
+                        echo "TODO: ejecutar sonar-scanner"
+                    """
+                }
+            }
+        }
+
+        stage("5 · Quality Gate") {
+            steps {
+                // TODO 6: Espera el resultado del Quality Gate de SonarQube
+                // Pista: usa timeout y waitForQualityGate abortPipeline: true
+                echo "TODO: verificar Quality Gate"
+            }
+        }
+
+        stage("6 · Resumen") {
+            steps {
+                sh """
+                    echo "Proyecto : ${APP_NAME}"
+                    echo "Branch   : \$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo N/A)"
+                    echo "Commit   : \$(git rev-parse --short HEAD 2>/dev/null || echo N/A)"
+                """
+            }
+        }
+    }
+
+    post {
+        // TODO 7: Completa el bloque post con:
+        //   always   — mensaje de estado del pipeline
+        //   success  — mensaje de build exitoso
+        //   failure  — mensaje de fallo con URL de SonarQube
+        always {
+            echo "Pipeline finalizado: ${currentBuild.currentResult}"
+        }
+    }
+}

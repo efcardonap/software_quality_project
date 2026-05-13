@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de Clase — FastAPI · Jenkins · SonarQube</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f0e8;--bg2:#ede8df;--bg3:#e3ddd3;
+  --ink:#1a1612;--ink2:#3d3830;--ink3:#6b6258;
+  --rule:#c8bfb2;
+  --red:#b91c1c;--lred:#fef2f2;
+  --amber:#92400e;--lamber:#fffbeb;
+  --blue:#1e40af;--lblue:#eff6ff;
+  --green:#14532d;--lgreen:#f0fdf4;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+  --r:4px;--rl:8px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);font-size:15px;line-height:1.72}
+
+/* NAV */
+nav{background:var(--ink);position:sticky;top:0;z-index:100;border-bottom:2px solid var(--red)}
+.ni{max-width:1100px;margin:0 auto;padding:0 1.5rem;display:flex;align-items:center;height:46px;overflow-x:auto;scrollbar-width:none;gap:0}
+.ni::-webkit-scrollbar{display:none}
+nav a{font-family:var(--mono);font-size:11.5px;color:#8a8070;text-decoration:none;padding:0 12px;height:46px;display:flex;align-items:center;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s}
+nav a:hover{color:#fff;border-bottom-color:var(--red)}
+.nl{color:#e07060 !important;padding-left:0 !important;margin-right:8px;border-bottom:none !important;font-weight:600}
+
+/* HERO */
+.hero{background:var(--ink);border-bottom:3px solid var(--red);padding:4.5rem 1.5rem 3.5rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(-60deg,transparent,transparent 60px,rgba(176,60,40,.04) 60px,rgba(176,60,40,.04) 61px)}
+.hi{max-width:1100px;margin:0 auto;position:relative}
+.hbadge{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#e07060;margin-bottom:1.25rem;display:block}
+.hero h1{font-family:var(--sans);font-weight:700;font-size:clamp(1.9rem,4.5vw,3rem);line-height:1.1;color:#f5f0e8;margin-bottom:.85rem}
+.hero h1 em{font-style:italic;color:#e07060}
+.hero p{color:#8a8070;max-width:580px;font-size:16px;margin-bottom:2rem}
+.htags{display:flex;flex-wrap:wrap;gap:7px}
+.htag{font-family:var(--mono);font-size:11px;padding:3px 10px;border-radius:3px;border:1px solid #2a2520;color:#6a6055}
+.htag.r{border-color:rgba(185,28,28,.4);color:#f87171}
+.htag.g{border-color:rgba(20,83,45,.4);color:#86efac}
+.htag.b{border-color:rgba(30,64,175,.35);color:#93c5fd}
+
+/* LAYOUT */
+.main{max-width:1100px;margin:0 auto;padding:2.75rem 1.5rem 5rem}
+section{margin-bottom:4rem;scroll-margin-top:60px}
+.sdiv{height:1px;background:var(--rule);margin:3.5rem 0}
+
+/* HEADINGS */
+h2{font-family:var(--sans);font-weight:700;font-size:1.65rem;color:var(--ink);margin-bottom:1.25rem;display:flex;align-items:center;gap:12px;padding-bottom:.75rem;border-bottom:2px solid var(--rule)}
+.sn{font-family:var(--mono);font-size:10.5px;font-weight:600;color:var(--red);background:var(--lred);border:1px solid rgba(185,28,28,.2);padding:3px 9px;border-radius:3px}
+h3{font-family:var(--sans);font-weight:600;font-size:1.1rem;color:var(--ink);margin:2rem 0 .75rem}
+p{margin-bottom:.85rem;color:var(--ink2)}
+strong{font-weight:600;color:var(--ink)}
+code{font-family:var(--mono);font-size:12px;background:var(--bg2);border:1px solid var(--rule);padding:1px 5px;border-radius:3px;color:var(--blue)}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+
+/* CODE */
+.clabel{font-family:var(--mono);font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:.09em;margin-bottom:4px;display:flex;align-items:center;gap:7px}
+.clabel span{padding:2px 8px;border-radius:3px;font-size:10px;border:1px solid}
+.lsh{background:var(--lgreen);border-color:rgba(20,83,45,.3) !important;color:var(--green) !important}
+.lpy{background:var(--lblue);border-color:rgba(30,64,175,.3) !important;color:var(--blue) !important}
+.ljk{background:#fffbeb;border-color:rgba(146,64,14,.3) !important;color:var(--amber) !important}
+pre{background:var(--ink2);border:1px solid #2a2520;border-radius:var(--r);padding:1.2rem 1.4rem;overflow-x:auto;margin:.85rem 0}
+pre code{font-family:var(--mono);font-size:12.5px;line-height:1.9;background:none;border:none;padding:0;color:#d4cec6}
+.cm{color:#4a4540;font-style:italic}.ck{color:#f97066}.cs{color:#86efac}.cv{color:#93c5fd}
+.cf{color:#fcd34d}.ce{color:#c4b5fd}.cc{color:#6ee7b7}.cw{color:#fbbf24}
+.vuln{background:rgba(185,28,28,.15);border-left:2px solid #f87171;margin-left:-1.4rem;padding-left:1.2rem;display:block}
+
+/* CARDS */
+.card{background:var(--bg2);border:1px solid var(--rule);border-radius:var(--rl);padding:1.4rem;margin-bottom:1.1rem}
+.g2{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:.9rem;margin-bottom:1.1rem}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:.9rem;margin-bottom:1.1rem}
+
+/* CALLOUT */
+.callout{border-radius:var(--r);padding:.9rem 1.1rem;margin:1.1rem 0;border-left:3px solid;font-size:14px;line-height:1.7}
+.callout.info{background:var(--lblue);border-color:var(--blue);color:var(--blue)}
+.callout.warn{background:var(--lamber);border-color:var(--amber);color:var(--amber)}
+.callout.ok{background:var(--lgreen);border-color:var(--green);color:var(--green)}
+.callout.err{background:var(--lred);border-color:var(--red);color:var(--red)}
+.callout strong{font-weight:600;color:inherit}
+
+/* STEPS */
+.steps{margin:1.1rem 0}
+.step{display:grid;grid-template-columns:36px 1fr;gap:.9rem;margin-bottom:1.6rem}
+.snum{width:32px;height:32px;border-radius:50%;background:var(--ink);border:2px solid var(--red);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-weight:600;font-size:13px;color:#e07060;flex-shrink:0;margin-top:3px}
+.step h4{font-weight:600;font-size:14.5px;color:var(--ink);margin-bottom:.4rem}
+
+/* TREE */
+.tree{background:var(--ink2);border:1px solid #2a2520;border-radius:var(--r);padding:1.2rem 1.4rem;font-family:var(--mono);font-size:12.5px;line-height:2.1}
+.tree .dir{color:var(--cw)}.tree .pyf{color:#93c5fd}.tree .new{color:#6ee7b7;font-weight:600}
+.tree .root{color:#e07060;font-weight:600}.tree .jkf{color:#fcd34d}.tree .cm{color:#4a4540;font-style:italic}
+
+/* DEBT TABLE */
+.debt-table{width:100%;border-collapse:collapse;margin:.85rem 0;font-size:13px}
+.debt-table th{background:var(--ink);color:#d4cec6;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.06em;padding:8px 12px;text-align:left;border-bottom:2px solid var(--red)}
+.debt-table td{padding:9px 12px;border-bottom:1px solid var(--rule);vertical-align:top}
+.debt-table tr:hover td{background:var(--bg2)}
+.debt-table tr:last-child td{border-bottom:none}
+.sev{font-family:var(--mono);font-size:10.5px;padding:2px 7px;border-radius:3px;border:1px solid;white-space:nowrap}
+.sev.c{color:var(--red);background:var(--lred);border-color:rgba(185,28,28,.25)}
+.sev.a{color:#c05621;background:#fff7ed;border-color:rgba(192,86,33,.25)}
+.sev.m{color:var(--amber);background:var(--lamber);border-color:rgba(146,64,14,.2)}
+.sev.b{color:var(--blue);background:var(--lblue);border-color:rgba(30,64,175,.2)}
+
+/* RETOS */
+.reto{background:var(--bg2);border:1px solid var(--rule);border-left:4px solid var(--red);border-radius:var(--rl);padding:1.4rem;margin:1.8rem 0}
+.reto-h{display:flex;align-items:center;gap:10px;margin-bottom:.85rem;flex-wrap:wrap}
+.rbadge{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.09em;padding:3px 10px;border-radius:20px;font-weight:500}
+.rb-b{background:var(--lgreen);color:var(--green);border:1px solid rgba(20,83,45,.25)}
+.rb-i{background:var(--lamber);color:var(--amber);border:1px solid rgba(146,64,14,.25)}
+.rb-a{background:var(--lred);color:var(--red);border:1px solid rgba(185,28,28,.25)}
+.rtitle{font-weight:700;font-size:.95rem;color:var(--ink)}
+.reto p{font-size:14px}
+.reto textarea{width:100%;min-height:76px;background:var(--bg);border:1px solid var(--rule);border-radius:var(--r);color:var(--ink);font-family:var(--mono);font-size:12px;padding:9px 11px;resize:vertical;line-height:1.6;margin-top:.6rem}
+.reto textarea:focus{outline:none;border-color:var(--red)}
+.reto textarea::placeholder{color:var(--ink3)}
+details.pista summary{font-family:var(--mono);font-size:12px;color:var(--amber);cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;margin-top:.5rem;user-select:none}
+details.pista summary::before{content:'▶';font-size:9px;transition:transform .2s}
+details.pista[open] summary::before{transform:rotate(90deg)}
+.pista-body{background:var(--lamber);border-left:2px solid var(--amber);padding:.7rem 1rem;margin-top:.4rem;border-radius:0 var(--r) var(--r) 0;font-size:13.5px;color:var(--amber);line-height:1.7}
+
+/* COV BAR */
+.covbar{margin:1.1rem 0}
+.covbar-row{display:flex;align-items:center;gap:.75rem;margin-bottom:.5rem}
+.covbar-label{font-family:var(--mono);font-size:12px;color:var(--ink2);width:200px;flex-shrink:0}
+.covbar-track{flex:1;height:10px;background:var(--bg3);border-radius:5px;overflow:hidden}
+.covbar-fill{height:100%;border-radius:5px;transition:width .5s ease}
+.covbar-fill.ok{background:var(--green)}
+.covbar-fill.warn{background:var(--amber)}
+.covbar-fill.err{background:var(--red)}
+.covbar-pct{font-family:var(--mono);font-size:11.5px;color:var(--ink3);width:36px;text-align:right;flex-shrink:0}
+
+@media print{
+  nav,.reto textarea,details.pista{display:none}
+  body{background:#fff;color:#000;font-size:13px}
+  .hero{background:#1a1612;padding:2rem}
+  .hero h1{font-size:1.8rem}
+  pre{background:#1a1612}
+  pre code,.tree{color:#ccc}
+  section{page-break-inside:avoid}
+}
+@media(max-width:640px){
+  .main{padding:1.75rem 1rem 4rem}
+  h2{font-size:1.3rem}
+  .hero h1{font-size:1.7rem}
+  .step{grid-template-columns:28px 1fr}
+  pre{font-size:11px;padding:.9rem}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="ni">
+    <a class="nl" href="#top">▶ SQ Lab</a>
+    <a href="#intro">Intro</a>
+    <a href="#fork">Fork & Clone</a>
+    <a href="#proyecto">Proyecto</a>
+    <a href="#deuda">Deuda técnica</a>
+    <a href="#cobertura">Cobertura</a>
+    <a href="#jenkinsfile">Jenkinsfile</a>
+    <a href="#sonar">SonarQube</a>
+    <a href="#entregables">Entregables</a>
+  </div>
+</nav>
+
+<div id="top" class="hero">
+  <div class="hi">
+    <span class="hbadge">Calidad del Software · Sesión Práctica · FastAPI + CI/CD</span>
+    <h1>Software Quality Project<br><em>FastAPI, Jenkins & SonarQube</em></h1>
+    <p>Fork un proyecto base con deuda técnica intencional, configura el pipeline de CI/CD, escribe las pruebas faltantes y corrige lo que SonarQube reporta.</p>
+    <div class="htags">
+      <span class="htag r">FastAPI</span>
+      <span class="htag r">Deuda técnica</span>
+      <span class="htag g">pytest ≥85%</span>
+      <span class="htag g">Jenkinsfile</span>
+      <span class="htag b">SonarQube</span>
+      <span class="htag b">GitHub Fork</span>
+    </div>
+  </div>
+</div>
+
+<main class="main">
+
+<!-- ═══ INTRO ═══ -->
+<section id="intro">
+  <h2><span class="sn">01</span> Objetivo de la sesión</h2>
+  <p>En esta sesión cada equipo recibirá un proyecto Python base con una API REST construida con <strong>FastAPI</strong>. El proyecto tiene deuda técnica intencional visible en SonarQube. El trabajo del equipo es triple:</p>
+  <div class="g3">
+    <div class="card"><strong style="color:var(--red)">① Escribir</strong><p style="font-size:13.5px;margin-top:.35rem">Completar el <code>Jenkinsfile</code> con los 7 TODOs marcados y las pruebas unitarias faltantes hasta superar el 85% de cobertura.</p></div>
+    <div class="card"><strong style="color:var(--amber)">② Analizar</strong><p style="font-size:13.5px;margin-top:.35rem">Ejecutar el pipeline, leer el dashboard de SonarQube e identificar cada issue reportado clasificándolo por tipo y severidad.</p></div>
+    <div class="card"><strong style="color:var(--green)">③ Corregir</strong><p style="font-size:13.5px;margin-top:.35rem">Aplicar al menos 3 correcciones técnicas sobre la deuda detectada, re-ejecutar el pipeline y verificar que los issues desaparezcan.</p></div>
+  </div>
+  <div class="callout info"><strong>Tiempo estimado:</strong> 2 horas. Distribución sugerida: 20 min fork y setup · 30 min Jenkinsfile · 40 min pruebas · 30 min análisis SonarQube y correcciones.</div>
+</section>
+
+<div class="sdiv"></div>
+
+<!-- ═══ FORK & CLONE ═══ -->
+<section id="fork">
+  <h2><span class="sn">02</span> Fork y descarga del proyecto</h2>
+  <p>Cada equipo trabaja sobre su propio fork del repositorio base. Sigan estos pasos exactamente usando la consola — <strong>no usen GitHub Desktop ni interfaz gráfica</strong>.</p>
+
+  <h3>Paso 1 — Hacer Fork en GitHub</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="snum">1</div>
+      <div class="step-body">
+        <h4>Abrir el repositorio base en el navegador</h4>
+        <p style="font-size:14px">Ingresa a: <a href="https://github.com/duvanfr/software_quality_project" target="_blank">https://github.com/duvanfr/software_quality_project</a></p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="snum">2</div>
+      <div class="step-body">
+        <h4>Crear el fork</h4>
+        <p style="font-size:14px">Clic en el botón <strong>Fork</strong> (esquina superior derecha) → elige tu cuenta personal → clic en <strong>Create fork</strong>. Esto crea una copia del repositorio bajo tu usuario de GitHub.</p>
+      </div>
+    </div>
+  </div>
+
+  <h3>Paso 2 — Clonar el fork por consola</h3>
+  <div class="callout warn"><strong>En Windows:</strong> usa PowerShell. <strong>En Mac/Linux:</strong> usa el Terminal. Reemplaza <code>TU-USUARIO</code> con tu nombre de usuario de GitHub.</div>
+
+  <span class="clabel"><span class="lsh">Consola</span> Comandos Git paso a paso</span>
+  <pre><code><span class="cm"># 1. Verificar que git está instalado</span>
+<span class="cc">git --version</span>
+
+<span class="cm"># 2. Clonar tu fork (reemplaza TU-USUARIO con tu usuario GitHub)</span>
+<span class="cc">git clone https://github.com/TU-USUARIO/software_quality_project.git</span>
+
+<span class="cm"># 3. Entrar a la carpeta del proyecto</span>
+<span class="cc">cd software_quality_project</span>
+
+<span class="cm"># 4. Verificar que estás en la rama main y conectado a tu fork</span>
+<span class="cc">git remote -v</span>
+<span class="cm"># Debes ver: origin  https://github.com/TU-USUARIO/software_quality_project.git</span>
+
+<span class="cm"># 5. Agregar el repositorio original como upstream (para actualizaciones futuras)</span>
+<span class="cc">git remote add upstream https://github.com/duvanfr/software_quality_project.git</span>
+
+<span class="cm"># 6. Crear una rama de trabajo con el nombre del equipo</span>
+<span class="cc">git checkout -b feature/equipo-01</span>
+<span class="cm"># Reemplaza "equipo-01" con el identificador de tu equipo</span>
+
+<span class="cm"># 7. Confirmar que la rama fue creada</span>
+<span class="cc">git branch</span></code></pre>
+
+  <h3>Paso 3 — Instalar dependencias y verificar el proyecto</h3>
+  <span class="clabel"><span class="lsh">PowerShell / Terminal</span></span>
+  <pre><code><span class="cm"># Crear y activar entorno virtual</span>
+<span class="cm"># En Windows:</span>
+<span class="cc">python -m venv venv</span>
+<span class="cc">venv\Scripts\activate</span>
+
+<span class="cm"># En Mac/Linux:</span>
+<span class="cc">python3 -m venv venv</span>
+<span class="cc">source venv/bin/activate</span>
+
+<span class="cm"># Instalar dependencias</span>
+<span class="cc">pip install -r requirements.txt</span>
+
+<span class="cm"># Ejecutar las pruebas existentes y ver la cobertura actual</span>
+<span class="cc">python -m pytest tests/ -v --cov=src --cov-report=term-missing</span>
+
+<span class="cm"># Debes ver: 24 passed, cobertura ~78%</span></code></pre>
+
+  <div class="reto">
+    <div class="reto-h"><span class="rbadge rb-b">Reto 1 · Básico</span><span class="rtitle">Verificar el fork</span></div>
+    <p>Después de clonar y ejecutar las pruebas, responde: ¿Cuántos tests pasaron? ¿Cuál es el porcentaje de cobertura actual por módulo? ¿Qué módulo tiene la cobertura más baja?</p>
+    <textarea placeholder="Escribe aquí tus observaciones..."></textarea>
+    <details class="pista"><summary>Ver pista</summary><div class="pista-body">El reporte <code>--cov-report=term-missing</code> muestra las líneas faltantes por archivo. El módulo con menor cobertura es <code>src/routers/notas.py</code> con ~58% — la mayoría de los endpoints de promedio y reporte no tienen pruebas todavía.</div></details>
+  </div>
+</section>
+
+<div class="sdiv"></div>
+
+<!-- ═══ PROYECTO ═══ -->
+<section id="proyecto">
+  <h2><span class="sn">03</span> Estructura del proyecto</h2>
+
+  <div class="tree">
+    <span class="root">software_quality_project/</span><br>
+    &nbsp;&nbsp;├── <span class="pyf">main.py</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm"># FastAPI app — punto de entrada</span><br>
+    &nbsp;&nbsp;├── <span class="dir">src/</span><br>
+    &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── <span class="dir">models/</span><br>
+    &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── <span class="pyf">schemas.py</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm"># Pydantic — validación de datos</span><br>
+    &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── <span class="pyf">database.py</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm"># Almacenamiento en memoria</span><br>
+    &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── <span class="dir">routers/</span><br>
+    &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── <span class="pyf">estudiantes.py</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm"># CRUD de estudiantes</span><br>
+    &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── <span class="pyf">materias.py</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm"># CRUD de materias</span><br>
+    &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── <span class="pyf">notas.py</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm"># Notas, promedios y reportes</span><br>
+    &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── <span class="dir">services/</span><br>
+    &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="pyf">academic_service.py</span> &nbsp;&nbsp;<span class="cm"># Lógica de negocio</span><br>
+    &nbsp;&nbsp;├── <span class="dir">tests/</span><br>
+    &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── <span class="pyf">test_estudiantes.py</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm"># 8 tests — COMPLETAR</span><br>
+    &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;├── <span class="pyf">test_materias.py</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm"># 5 tests — COMPLETAR</span><br>
+    &nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;└── <span class="pyf">test_notas.py</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm"># 11 tests — COMPLETAR</span><br>
+    &nbsp;&nbsp;├── <span class="jkf">Jenkinsfile</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm"># 7 TODOs — COMPLETAR</span><br>
+    &nbsp;&nbsp;├── <span class="pyf">requirements.txt</span><br>
+    &nbsp;&nbsp;├── <span class="pyf">setup.cfg</span><br>
+    &nbsp;&nbsp;└── <span class="pyf">conftest.py</span>
+  </div>
+
+  <h3>Cómo funciona la API</h3>
+  <p>El proyecto expone una API REST con 3 grupos de endpoints. Una vez instalado, puedes probarla interactivamente en <code>http://localhost:8000/docs</code> (Swagger UI automático de FastAPI).</p>
+
+  <span class="clabel"><span class="lsh">Terminal — arrancar la API localmente</span></span>
+  <pre><code><span class="cm"># Arrancar el servidor de desarrollo</span>
+<span class="cc">uvicorn main:app --reload</span>
+
+<span class="cm"># Probar que responde</span>
+<span class="cc">curl http://localhost:8000/</span>
+<span class="cm"># {"status": "ok", "message": "Software Quality API"}</span>
+
+<span class="cm"># Crear un estudiante de prueba</span>
+<span class="cc">curl -X POST http://localhost:8000/estudiantes/ \</span>
+<span class="cc">  -H "Content-Type: application/json" \</span>
+<span class="cc">  -d '{"codigo":"E001","nombre":"Ana García","email":"ana@test.com","semestre":5}'</span></code></pre>
+</section>
+
+<div class="sdiv"></div>
+
+<!-- ═══ DEUDA ═══ -->
+<section id="deuda">
+  <h2><span class="sn">04</span> Deuda técnica del proyecto base</h2>
+  <p>El proyecto contiene deuda técnica intencional distribuida en varios archivos. SonarQube la detectará al ejecutar el pipeline. Esta tabla es tu mapa de trabajo.</p>
+
+  <div style="overflow-x:auto">
+  <table class="debt-table">
+    <thead><tr><th>Archivo</th><th>Severidad</th><th>Tipo</th><th>Regla SonarQube</th><th>Descripción</th></tr></thead>
+    <tbody>
+      <tr><td><code>academic_service.py</code></td><td><span class="sev a">ALTA</span></td><td>Bug</td><td><code>python:S3518</code></td><td>División por cero en <code>calcular_promedio_estudiante</code> y <code>calcular_promedio_materia</code> cuando no hay notas.</td></tr>
+      <tr><td><code>academic_service.py</code></td><td><span class="sev a">ALTA</span></td><td>Code Smell</td><td><code>common:DuplicatedBlocks</code></td><td>Código duplicado entre <code>calcular_promedio_estudiante</code> y <code>calcular_promedio_materia</code>.</td></tr>
+      <tr><td><code>academic_service.py</code></td><td><span class="sev m">MEDIA</span></td><td>Code Smell</td><td><code>python:S3776</code></td><td>Función <code>reporte_academico</code> con demasiadas responsabilidades — complejidad cognitiva alta.</td></tr>
+      <tr><td><code>academic_service.py</code></td><td><span class="sev m">MEDIA</span></td><td>Code Smell</td><td><code>python:S109</code></td><td>Magic numbers: el valor <code>3.0</code> para aprobación se repite sin estar nombrado como constante.</td></tr>
+      <tr><td><code>academic_service.py</code></td><td><span class="sev b">BAJA</span></td><td>Code Smell</td><td><code>python:S1481</code></td><td>Variable <code>conteo_materias</code> declarada pero nunca usada en el retorno.</td></tr>
+      <tr><td><code>models/database.py</code></td><td><span class="sev a">ALTA</span></td><td>Code Smell</td><td><code>python:S2696</code></td><td>Uso de <code>global</code> para modificar variables de módulo — no es thread-safe.</td></tr>
+      <tr><td><code>models/schemas.py</code></td><td><span class="sev m">MEDIA</span></td><td>Code Smell</td><td><code>python:S5322</code></td><td>Uso de tipo <code>Any</code> innecesariamente en <code>MateriaCreate.descripcion</code>.</td></tr>
+      <tr><td><code>models/schemas.py</code></td><td><span class="sev b">BAJA</span></td><td>Code Smell</td><td><code>python:S1133</code></td><td>Uso de <code>class Config</code> estilo Pydantic v1 en lugar de <code>model_config = ConfigDict(...)</code>.</td></tr>
+      <tr><td><code>routers/notas.py</code></td><td><span class="sev a">ALTA</span></td><td>Bug</td><td><code>python:S3518</code></td><td>Endpoints de promedio llaman al servicio sin manejo de <code>ZeroDivisionError</code>.</td></tr>
+      <tr><td><code>routers/materias.py</code></td><td><span class="sev m">MEDIA</span></td><td>Code Smell</td><td><code>python:S109</code></td><td>Magic numbers <code>1</code> y <code>6</code> como límites de créditos sin constante nombrada.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="reto">
+    <div class="reto-h"><span class="rbadge rb-b">Reto 2 · Básico</span><span class="rtitle">Localizar la deuda antes de ejecutar el pipeline</span></div>
+    <p>Abre cada archivo del proyecto y localiza las líneas marcadas con <code># [DEUDA</code>. Lista las que encontraste por archivo y clasifícalas según la tabla de arriba.</p>
+    <textarea placeholder="Archivo: academic_service.py — Línea X: ...&#10;Archivo: database.py — Línea Y: ..."></textarea>
+  </div>
+</section>
+
+<div class="sdiv"></div>
+
+<!-- ═══ COBERTURA ═══ -->
+<section id="cobertura">
+  <h2><span class="sn">05</span> Completar las pruebas unitarias — Meta: 85%</h2>
+
+  <h3>Estado actual de cobertura</h3>
+  <div class="covbar">
+    <div class="covbar-row"><span class="covbar-label">src/routers/notas.py</span><div class="covbar-track"><div class="covbar-fill err" style="width:58%"></div></div><span class="covbar-pct">58%</span></div>
+    <div class="covbar-row"><span class="covbar-label">src/routers/estudiantes.py</span><div class="covbar-track"><div class="covbar-fill warn" style="width:73%"></div></div><span class="covbar-pct">73%</span></div>
+    <div class="covbar-row"><span class="covbar-label">src/services/academic_service.py</span><div class="covbar-track"><div class="covbar-fill warn" style="width:77%"></div></div><span class="covbar-pct">77%</span></div>
+    <div class="covbar-row"><span class="covbar-label">src/routers/materias.py</span><div class="covbar-track"><div class="covbar-fill warn" style="width:81%"></div></div><span class="covbar-pct">81%</span></div>
+    <div class="covbar-row"><span class="covbar-label">src/models/database.py</span><div class="covbar-track"><div class="covbar-fill ok" style="width:100%"></div></div><span class="covbar-pct">100%</span></div>
+    <div class="covbar-row"><span class="covbar-label"><strong>TOTAL</strong></span><div class="covbar-track"><div class="covbar-fill warn" style="width:78%"></div></div><span class="covbar-pct"><strong>78%</strong></span></div>
+  </div>
+
+  <div class="callout warn"><strong>Meta:</strong> El equipo debe subir la cobertura total al ≥85% completando los tests marcados con <code># TODO</code> en cada archivo de pruebas. El umbral de 85% está configurado en el Jenkinsfile que el equipo debe completar.</div>
+
+  <h3>Tests pendientes por módulo</h3>
+
+  <span class="clabel"><span class="lpy">Python</span> test_estudiantes.py — tests que debe agregar el equipo</span>
+  <pre><code><span class="cm"># Agrega estos métodos dentro de la clase TestListarEstudiantes o como clases nuevas</span>
+
+<span class="ck">def</span> <span class="cf">test_eliminar_estudiante_existente</span>(<span class="cv">self</span>):
+    client.post(<span class="cs">"/estudiantes/"</span>, json={...})
+    response = client.delete(<span class="cs">"/estudiantes/E001"</span>)
+    <span class="ck">assert</span> response.status_code == <span class="cv">204</span>
+
+<span class="ck">def</span> <span class="cf">test_eliminar_estudiante_inexistente</span>(<span class="cv">self</span>):
+    response = client.delete(<span class="cs">"/estudiantes/X999"</span>)
+    <span class="ck">assert</span> response.status_code == <span class="cv">404</span>
+
+<span class="ck">def</span> <span class="cf">test_desactivar_estudiante</span>(<span class="cv">self</span>):
+    client.post(<span class="cs">"/estudiantes/"</span>, json={...})
+    response = client.put(<span class="cs">"/estudiantes/E001/desactivar"</span>)
+    <span class="ck">assert</span> response.status_code == <span class="cv">200</span>
+    <span class="ck">assert</span> response.json()[<span class="cs">"activo"</span>] <span class="ck">is False</span>
+
+<span class="ck">def</span> <span class="cf">test_semestre_minimo_y_maximo</span>(<span class="cv">self</span>):
+    <span class="cm"># semestre=1 válido</span>
+    r1 = client.post(<span class="cs">"/estudiantes/"</span>, json={<span class="cs">"codigo"</span>:<span class="cs">"E001"</span>,...,<span class="cs">"semestre"</span>:<span class="cv">1</span>})
+    <span class="ck">assert</span> r1.status_code == <span class="cv">201</span>
+    <span class="cm"># semestre=10 válido</span>
+    r2 = client.post(<span class="cs">"/estudiantes/"</span>, json={<span class="cs">"codigo"</span>:<span class="cs">"E002"</span>,...,<span class="cs">"semestre"</span>:<span class="cv">10</span>})
+    <span class="ck">assert</span> r2.status_code == <span class="cv">201</span></code></pre>
+
+  <span class="clabel"><span class="lpy">Python</span> test_notas.py — tests críticos para documentar y corregir bugs</span>
+  <pre><code><span class="ck">def</span> <span class="cf">test_division_por_cero_promedio_estudiante</span>(<span class="cv">self</span>):
+    <span class="cs">"""
+    DOCUMENTA LA DEUDA: ZeroDivisionError cuando el estudiante no tiene notas.
+    Después de corregir el servicio, este test debe usar pytest.raises
+    o verificar que retorna 0.0 según la estrategia elegida.
+    """</span>
+    <span class="cm"># Crear estudiante sin notas</span>
+    client.post(<span class="cs">"/estudiantes/"</span>, json={<span class="cs">"codigo"</span>:<span class="cs">"E001"</span>,...})
+    <span class="cm"># Antes de corregir: lanza ZeroDivisionError</span>
+    <span class="ck">with</span> pytest.raises(ZeroDivisionError):
+        calcular_promedio_estudiante(<span class="cs">"E001"</span>)
+
+<span class="ck">def</span> <span class="cf">test_promedio_estudiante_endpoint</span>(<span class="cv">self</span>, setup_datos):
+    <span class="cm"># Registrar una nota primero</span>
+    client.post(<span class="cs">"/notas/"</span>, json={<span class="cs">"codigo_estudiante"</span>:<span class="cs">"E001"</span>,
+        <span class="cs">"codigo_materia"</span>:<span class="cs">"CS101"</span>,<span class="cs">"actividad"</span>:<span class="cs">"P1"</span>,<span class="cs">"valor"</span>:<span class="cv">4.0</span>})
+    response = client.get(<span class="cs">"/notas/promedio/estudiante/E001"</span>)
+    <span class="ck">assert</span> response.status_code == <span class="cv">200</span>
+    <span class="ck">assert</span> response.json()[<span class="cs">"promedio"</span>] == <span class="cv">4.0</span>
+
+<span class="ck">def</span> <span class="cf">test_reporte_con_notas_mixtas</span>(<span class="cv">self</span>, setup_datos):
+    client.post(<span class="cs">"/notas/"</span>, json={..., <span class="cs">"valor"</span>: <span class="cv">4.0</span>})  <span class="cm"># aprobado</span>
+    client.post(<span class="cs">"/notas/"</span>, json={..., <span class="cs">"valor"</span>: <span class="cv">2.0</span>})  <span class="cm"># reprobado</span>
+    response = client.get(<span class="cs">"/notas/reporte/E001"</span>)
+    data = response.json()
+    <span class="ck">assert</span> data[<span class="cs">"aprobadas"</span>] == <span class="cv">1</span>
+    <span class="ck">assert</span> data[<span class="cs">"reprobadas"</span>] == <span class="cv">1</span>
+    <span class="ck">assert</span> data[<span class="cs">"promedio"</span>] == <span class="cv">3.0</span></code></pre>
+
+  <div class="reto">
+    <div class="reto-h"><span class="rbadge rb-i">Reto 3 · Intermedio</span><span class="rtitle">Subir la cobertura al 85%</span></div>
+    <p>Agrega los tests faltantes en los tres archivos de prueba. Después de cada grupo de tests agregados, ejecuta:</p>
+    <pre style="margin:.5rem 0"><code><span class="cc">python -m pytest tests/ --cov=src --cov-report=term-missing -q</span></code></pre>
+    <p style="margin-top:.6rem;font-size:14px">¿Cuántos tests nuevos necesitaste agregar para superar el 85%? ¿Qué módulo fue el más difícil de cubrir?</p>
+    <textarea placeholder="Escribe aquí el resultado final: total de tests, cobertura alcanzada, módulo más difícil..."></textarea>
+    <details class="pista"><summary>Ver pista</summary><div class="pista-body">Las líneas más difíciles de cubrir son las de los endpoints de promedio (<code>notas.py</code> líneas 68-83) porque requieren que primero exista al menos una nota registrada. El fixture <code>setup_datos</code> ya crea el estudiante y la materia — solo falta registrar la nota antes de llamar al endpoint de promedio.</div></details>
+  </div>
+</section>
+
+<div class="sdiv"></div>
+
+<!-- ═══ JENKINSFILE ═══ -->
+<section id="jenkinsfile">
+  <h2><span class="sn">06</span> Completar el Jenkinsfile</h2>
+  <p>El archivo <code>Jenkinsfile</code> del proyecto tiene <strong>7 TODOs</strong> que el equipo debe completar. Cada TODO está comentado con una pista. Al terminar, el pipeline debe ejecutar todas las pruebas y enviar el análisis a SonarQube.</p>
+
+  <div class="callout info"><strong>Antes de completar el Jenkinsfile</strong> asegúrate de que Jenkins y SonarQube están corriendo con los comandos de clase anterior, y que el job de Jenkins apunta al fork de tu equipo.</div>
+
+  <h3>Referencia rápida — los 7 TODOs</h3>
+  <div style="overflow-x:auto">
+  <table class="debt-table">
+    <thead><tr><th>#</th><th>Stage</th><th>Qué debe hacer</th><th>Instrucción clave</th></tr></thead>
+    <tbody>
+      <tr><td><strong>1</strong></td><td>environment</td><td>Definir las 5 variables de entorno del pipeline</td><td><code>SONAR_PROJECT_KEY, SONAR_HOST_URL, COVERAGE_THRESHOLD="85"...</code></td></tr>
+      <tr><td><strong>2</strong></td><td>Preparar entorno</td><td>Instalar dependencias y crear carpeta de reportes</td><td><code>pip3 install --no-cache-dir -r requirements.txt</code></td></tr>
+      <tr><td><strong>3</strong></td><td>Pruebas unitarias</td><td>Ejecutar pytest con cobertura y umbral</td><td><code>pytest --cov=src --cov-fail-under=\${COVERAGE_THRESHOLD} --junitxml=...</code></td></tr>
+      <tr><td><strong>4</strong></td><td>post always</td><td>Publicar resultados JUnit en Jenkins</td><td><code>junit "\${REPORTS_DIR}/test_results.xml"</code></td></tr>
+      <tr><td><strong>5</strong></td><td>Análisis SonarQube</td><td>Ejecutar sonar-scanner con todos los parámetros</td><td><code>sonar-scanner -Dsonar.projectKey=... -Dsonar.sources=src ...</code></td></tr>
+      <tr><td><strong>6</strong></td><td>Quality Gate</td><td>Esperar resultado del Quality Gate</td><td><code>timeout(time:5,...){ waitForQualityGate abortPipeline:true }</code></td></tr>
+      <tr><td><strong>7</strong></td><td>post completo</td><td>Agregar bloques success, failure y unstable</td><td>Mensajes descriptivos de cada estado del build</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Crear el job en Jenkins apuntando al fork</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="snum">1</div>
+      <div class="step-body">
+        <h4>New Item en Jenkins</h4>
+        <p style="font-size:14px">Dashboard → <strong>New Item</strong> → nombre: <code>sqp-equipo-01</code> → tipo: <strong>Pipeline</strong> → OK</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="snum">2</div>
+      <div class="step-body">
+        <h4>Configurar el SCM</h4>
+        <p style="font-size:14px">En <strong>Pipeline</strong> → Definition: <em>Pipeline script from SCM</em> → SCM: <em>Git</em> → Repository URL: URL de tu fork → Branch: <code>*/feature/equipo-01</code></p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="snum">3</div>
+      <div class="step-body">
+        <h4>Guardar y ejecutar</h4>
+        <p style="font-size:14px">Clic en <strong>Save</strong> → <strong>Build Now</strong>. El pipeline leerá el <code>Jenkinsfile</code> de tu rama directamente.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="reto">
+    <div class="reto-h"><span class="rbadge rb-i">Reto 4 · Intermedio</span><span class="rtitle">Completar y ejecutar el Jenkinsfile</span></div>
+    <p>Completa los 7 TODOs del <code>Jenkinsfile</code>, haz commit y push a tu rama, ejecuta el pipeline y responde: ¿Qué stage tardó más? ¿Pasó el Quality Gate en el primer intento? ¿Qué error apareció primero si algo falló?</p>
+    <textarea placeholder="Describe el resultado del pipeline: stages completados, errores encontrados, tiempo total..."></textarea>
+    <details class="pista"><summary>Ver pista</summary><div class="pista-body">El TODO más difícil suele ser el #3 (pytest con todos los flags). Recuerda que en Groovy el <code>\${VAR}</code> dentro de comillas dobles interpoladas necesita escapar el signo: <code>--cov-fail-under=\${COVERAGE_THRESHOLD}</code>. Si el pipeline falla en "Quality Gate", verifica que configuraste el webhook en SonarQube apuntando a <code>http://jenkins:8080/sonarqube-webhook/</code>.</div></details>
+  </div>
+</section>
+
+<div class="sdiv"></div>
+
+<!-- ═══ SONAR ═══ -->
+<section id="sonar">
+  <h2><span class="sn">07</span> Analizar y corregir en SonarQube</h2>
+  <p>Una vez el pipeline pase el Stage 4, SonarQube habrá analizado el código. Abre <strong>http://localhost:9000</strong> y navega al proyecto.</p>
+
+  <h3>Corrección obligatoria 1 — División por cero</h3>
+  <p>El bug más grave es la división por cero en <code>academic_service.py</code>. La corrección es simple:</p>
+  <div class="g2">
+    <div>
+      <span class="clabel"><span class="lpy">Python</span> ❌ Vulnerable</span>
+      <pre><code><span class="ck">def</span> <span class="cf">calcular_promedio_estudiante</span>(codigo):
+    notas = [n <span class="ck">for</span> n <span class="ck">in</span> get_notas()
+             <span class="ck">if</span> n[<span class="cs">"codigo_estudiante"</span>] == codigo]
+    total = <span class="cc">sum</span>(n[<span class="cs">"valor"</span>] <span class="ck">for</span> n <span class="ck">in</span> notas)
+    <span class="vuln"><span class="ck">return</span> <span class="cc">round</span>(total / <span class="cc">len</span>(notas), <span class="cv">2</span>)  <span class="cm"># ← crash</span></span></code></pre>
+    </div>
+    <div>
+      <span class="clabel"><span class="lpy">Python</span> ✅ Corregido</span>
+      <pre><code><span class="ck">def</span> <span class="cf">calcular_promedio_estudiante</span>(codigo):
+    notas = [n <span class="ck">for</span> n <span class="ck">in</span> get_notas()
+             <span class="ck">if</span> n[<span class="cs">"codigo_estudiante"</span>] == codigo]
+    <span class="ck">if not</span> notas:
+        <span class="ck">return</span> <span class="cv">0.0</span>
+    <span class="ck">return</span> <span class="cc">round</span>(<span class="cc">sum</span>(n[<span class="cs">"valor"</span>] <span class="ck">for</span> n <span class="ck">in</span> notas) / <span class="cc">len</span>(notas), <span class="cv">2</span>)</code></pre>
+    </div>
+  </div>
+
+  <h3>Corrección obligatoria 2 — Magic number como constante</h3>
+  <div class="g2">
+    <div>
+      <span class="clabel"><span class="lpy">Python</span> ❌ Magic number</span>
+      <pre><code><span class="ck">def</span> <span class="cf">es_aprobado</span>(nota: float) -> bool:
+    <span class="vuln"><span class="ck">return</span> nota >= <span class="cv">3.0</span>  <span class="cm"># ← repetido 4 veces</span></span></code></pre>
+    </div>
+    <div>
+      <span class="clabel"><span class="lpy">Python</span> ✅ Constante nombrada</span>
+      <pre><code>NOTA_MINIMA_APROBACION: float = <span class="cv">3.0</span>
+
+<span class="ck">def</span> <span class="cf">es_aprobado</span>(nota: float) -> bool:
+    <span class="ck">return</span> nota >= NOTA_MINIMA_APROBACION</code></pre>
+    </div>
+  </div>
+
+  <h3>Corrección obligatoria 3 — Pydantic v2 style</h3>
+  <div class="g2">
+    <div>
+      <span class="clabel"><span class="lpy">Python</span> ❌ Pydantic v1 style</span>
+      <pre><code><span class="ck">class</span> <span class="ce">EstudianteCreate</span>(BaseModel):
+    codigo: str
+    ...
+    <span class="vuln"><span class="ck">class</span> <span class="ce">Config</span>:  <span class="cm"># ← deprecated en v2</span>
+        str_strip_whitespace = <span class="ck">True</span></span></code></pre>
+    </div>
+    <div>
+      <span class="clabel"><span class="lpy">Python</span> ✅ Pydantic v2 style</span>
+      <pre><code><span class="ck">from</span> pydantic <span class="ck">import</span> BaseModel, ConfigDict
+
+<span class="ck">class</span> <span class="ce">EstudianteCreate</span>(BaseModel):
+    model_config = ConfigDict(
+        str_strip_whitespace=<span class="ck">True</span>
+    )
+    codigo: str
+    ...</code></pre>
+    </div>
+  </div>
+
+  <div class="reto">
+    <div class="reto-h"><span class="rbadge rb-a">Reto 5 · Avanzado</span><span class="rtitle">Corregir y re-ejecutar — ¿el Quality Gate ahora pasa?</span></div>
+    <p>Aplica las 3 correcciones obligatorias más al menos 1 corrección adicional de tu elección (variable sin usar, tipo <code>Any</code>, o duplicación). Haz commit, push y ejecuta el pipeline de nuevo.</p>
+    <p style="font-size:14px;margin-top:.5rem">¿Cuántos issues desaparecieron del dashboard de SonarQube? ¿Cambió el estado del Quality Gate? ¿La deuda técnica estimada bajó?</p>
+    <textarea style="min-height:96px" placeholder="Describe los cambios: issues antes / issues después, deuda técnica antes / después, resultado del Quality Gate..."></textarea>
+  </div>
+</section>
+
+<div class="sdiv"></div>
+
+<!-- ═══ ENTREGABLES ═══ -->
+<section id="entregables">
+  <h2><span class="sn">08</span> Entregables de la sesión</h2>
+  <div class="g2">
+    <div class="card"><strong>① URL del fork</strong><p style="font-size:13.5px;margin-top:.3rem">El repositorio fork del equipo en GitHub con todos los cambios (Jenkinsfile completo, tests nuevos, correcciones).</p></div>
+    <div class="card"><strong>② Reporte de evidencias</strong><p style="font-size:13.5px;margin-top:.3rem">El documento Word proporcionado por el docente con capturas, análisis de SonarQube y reflexiones del equipo.</p></div>
+    <div class="card"><strong>③ Nombre del pipeline</strong><p style="font-size:13.5px;margin-top:.3rem">El job de Jenkins creado debe llamarse <code>sqp-equipo-XX</code> donde XX es el número del equipo.</p></div>
+  </div>
+  <div class="callout ok"><strong>Push de los cambios al fork:</strong> <code>git add . → git commit -m "feat: Jenkinsfile + tests + correcciones" → git push origin feature/equipo-01</code></div>
+</section>
+
+</main>
+</body>
+</html>
